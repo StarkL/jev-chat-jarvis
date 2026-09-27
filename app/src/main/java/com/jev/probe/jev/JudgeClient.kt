@@ -82,6 +82,9 @@ class JudgeClient(private val prefs: Prefs) {
             .put("model", prefs.judgeModel)
             .put("messages", messages)
             .put("temperature", 0.0)
+            // Disable extended thinking: saves ~700 reasoning tokens per call
+            // with no impact on output quality for structured tasks.
+            .put("enable_thinking", false)
         // response_format=json_object only works on providers that support it
         // (Qwen, OpenRouter). Custom endpoints may reject unknown fields.
         if (isJsonModeProvider(url)) {
@@ -250,41 +253,24 @@ class JudgeClient(private val prefs: Prefs) {
    对方最新消息是否完全是字面意思、没有潜台词？true=纯字面，false=有潜台词（试探、讽刺、暗示、反话等）。
 
 2. **true_intent** (choice + confidence)
-   对方的真实意图：
-   - confirm_you_care: 测试你是否记得、是否在乎
-   - vent_anger: 生气/受伤，需要情绪被看见
-   - request_action: 要具体行动/承诺/时间
-   - seek_explanation: 要事实解释
-   - casual_chat: 轻松闲聊无试探
-   - close_topic: 和平收尾，话题已关闭
+   选项: confirm_you_care | vent_anger | request_action | seek_explanation | casual_chat | close_topic
 
 3. **danger_level** (level: 1-10, confidence)
-   对话距离吵架/伤害关系的程度：1=轻松闲聊，5=冷淡试探，8=最后通牒，10=关系破裂。
+   1=轻松闲聊，5=冷淡试探，8=最后通，10=关系破裂。
 
 4. **should_reply_now** (value: true/false)
-   你的下一条消息是否应包含实质性内容（承认过错、给出具体时间/计划、解释你知道的事实）？
-   false=事实不在当前片段中/他们在试探/他们已关闭话题。
+   下一条消息是否应包含实质性内容？
 
 5. **best_action** (choice + confidence)
-   最佳行动类型：
-   - check_history: 先查之前的聊天记录
-   - apologize: 真诚道歉
-   - give_commitment: 给出具体承诺/deadline
-   - explain: 解释发生了什么
-   - acknowledge: 表示你在听、在乎
-   - say_less: 少说或不说
-   - make_plan: 提出/确认具体安排
+   选项: check_history | apologize | give_commitment | explain | acknowledge | say_less | make_plan
 
 6. **she_needs** (choice + confidence)
-   对方现在需要你做什么：
-   - apology: 真诚道歉
-   - action: 具体行动/承诺/事实回顾
-   - explanation: 清楚解释
-   - care: 证明你记得/在乎（忠诚度测试）
-   - nothing: 不需要更多（真正接受/和平收尾）
+   选项: apology | action | explanation | care | nothing
 
 7. **tension_resolved** (value: true/false)
-   人际紧张是否已解除？true=从未紧张或已接受/和好，false=仍在试探/生气/最后通牒未撤回。
+   人际紧张是否已解除？
+
+**只输出JSON对象，以{开头以}结尾，不要任何其他文字、分析或解释。**
 """.trimIndent()
     }
 }
