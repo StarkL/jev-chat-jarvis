@@ -10,8 +10,14 @@ plugins {
 // (storeFile / storePassword / keyAlias / keyPassword). Override the path with
 // the JEV_KEYSTORE_PROPS env var. Without it, release builds are unsigned.
 val releaseProps = Properties().apply {
-    val f = file(System.getenv("JEV_KEYSTORE_PROPS") ?: "H:/android/keys/jev-release.properties")
-    if (f.exists()) FileInputStream(f).use { load(it) }
+    val propsPath = System.getenv("JEV_KEYSTORE_PROPS") ?: "H:/android/keys/jev-release.properties"
+    try {
+        val f = file(propsPath)
+        if (f.exists()) FileInputStream(f).use { load(it) }
+    } catch (_: Exception) {
+        // Path may be invalid on non-Windows platforms (e.g. CI Linux runner);
+        // release builds will simply be unsigned.
+    }
 }
 
 android {
