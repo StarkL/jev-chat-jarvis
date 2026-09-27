@@ -21,6 +21,7 @@ gradle.properties.local
 /_reports/
 /tools/jev/report/
 /tools/jev/__pycache__/
+/tools/test/__pycache__/
 **/__pycache__/
 *.pyc
 

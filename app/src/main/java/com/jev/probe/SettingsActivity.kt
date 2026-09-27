@@ -82,7 +82,8 @@ class SettingsActivity : AppCompatActivity() {
             Prefs.PROVIDER_TYPESAFE -> 2
             Prefs.PROVIDER_VERCEL -> 3
             Prefs.PROVIDER_ZEN -> 4
-            Prefs.PROVIDER_CUSTOM -> 5
+            Prefs.PROVIDER_QWEN -> 5
+            Prefs.PROVIDER_CUSTOM -> 6
             else -> 0
         }
         // Bocha promo block — official address + one-tap copy (limited-time free).
@@ -115,7 +116,7 @@ class SettingsActivity : AppCompatActivity() {
         bochaBox.visibility = if (judgeProviderIdx == 1) View.VISIBLE else View.GONE
 
         judgeCard.addView(pills(
-            listOf("OpenRouter", "博查 Jev", "TypeSafe 直连", "Vercel", "OpenCode Zen", "自定义"), judgeProviderIdx) { idx ->
+            listOf("OpenRouter", "博查 Jev", "TypeSafe 直连", "Vercel", "OpenCode Zen", "Qwen 3.7", "自定义"), judgeProviderIdx) { idx ->
             judgeProviderIdx = idx
             when (idx) {
                 0 -> {
@@ -138,16 +139,20 @@ class SettingsActivity : AppCompatActivity() {
                     judgeBaseEdit.setText(Prefs.DEFAULT_JUDGE_BASE_ZEN)
                     judgeModelEdit.setText(Prefs.DEFAULT_JUDGE_MODEL_ZEN)
                 }
+                5 -> {
+                    judgeBaseEdit.setText(Prefs.DEFAULT_JUDGE_BASE_QWEN)
+                    judgeModelEdit.setText(Prefs.DEFAULT_JUDGE_MODEL_QWEN)
+                }
                 // Custom POSTs the box verbatim, so a preset HOST left in the box
                 // would hit the API root. Expand it into the full endpoint the
                 // preset would have used; anything hand-typed is left alone.
-                5 -> judgeBaseEdit.setText(expandJudgeUrl(judgeBaseEdit.text.toString()))
+                6 -> judgeBaseEdit.setText(expandJudgeUrl(judgeBaseEdit.text.toString()))
             }
             bochaBox.visibility = if (idx == 1) View.VISIBLE else View.GONE
         })
         judgeCard.addView(label("Base URL"))
         judgeCard.addView(judgeBaseEdit)
-        judgeCard.addView(text("OpenRouter 拼 /alpha/decisions；博查 Jev / TypeSafe / Vercel / OpenCode Zen 拼 /v1/systemone；自定义按原样 POST。Vercel 用 AI Gateway 的密钥，OpenCode Zen 用 Zen 的密钥。",
+        judgeCard.addView(text("OpenRouter 拼 /alpha/decisions；博查/TypeSafe/Vercel/OpenCode Zen 拼 /v1/systemone；Qwen 拼 /chat/completions；自定义按原样 POST。",
             11f, sub))
         judgeCard.addView(bochaBox)
         judgeCard.addView(label("密钥"))
@@ -205,14 +210,16 @@ class SettingsActivity : AppCompatActivity() {
             Prefs.DEFAULT_REPLY_BASE -> 0
             Prefs.DEEPSEEK_BASE -> 1
             Prefs.DASHSCOPE_BASE -> 2
-            else -> 3
+            Prefs.QWEN_REPLY_BASE -> 3
+            else -> 4
         }
         replyCard.addView(pills(
-            listOf("OpenRouter", "DeepSeek 官方", "通义兼容", "自定义"), replyIdx) { idx ->
+            listOf("OpenRouter", "DeepSeek 官方", "通义兼容", "Qwen 3.7", "自定义"), replyIdx) { idx ->
             when (idx) {
                 0 -> { replyBaseEdit.setText(Prefs.DEFAULT_REPLY_BASE); replyModelEdit.setText(Prefs.DEFAULT_REPLY_MODEL) }
                 1 -> { replyBaseEdit.setText(Prefs.DEEPSEEK_BASE); replyModelEdit.setText(Prefs.DEEPSEEK_MODEL) }
                 2 -> { replyBaseEdit.setText(Prefs.DASHSCOPE_BASE); replyModelEdit.setText(Prefs.DASHSCOPE_MODEL) }
+                3 -> { replyBaseEdit.setText(Prefs.QWEN_REPLY_BASE); replyModelEdit.setText(Prefs.QWEN_REPLY_MODEL) }
             }
         })
         replyCard.addView(label("Base URL"))
@@ -259,13 +266,15 @@ class SettingsActivity : AppCompatActivity() {
         val visionIdx = when (prefs.visionBaseUrl.trim().trimEnd('/')) {
             Prefs.DEFAULT_VISION_BASE -> 0
             Prefs.DASHSCOPE_BASE -> 1
-            else -> 2
+            Prefs.QWEN_VISION_BASE -> 2
+            else -> 3
         }
         visionCard.addView(pills(
-            listOf("OpenRouter", "通义兼容", "自定义"), visionIdx) { idx ->
+            listOf("OpenRouter", "通义兼容", "Qwen 3.7", "自定义"), visionIdx) { idx ->
             when (idx) {
                 0 -> { visionBaseEdit.setText(Prefs.DEFAULT_VISION_BASE); visionModelEdit.setText(Prefs.DEFAULT_VISION_MODEL) }
                 1 -> { visionBaseEdit.setText(Prefs.DASHSCOPE_BASE); visionModelEdit.setText(Prefs.DASHSCOPE_VISION_MODEL) }
+                2 -> { visionBaseEdit.setText(Prefs.QWEN_VISION_BASE); visionModelEdit.setText(Prefs.QWEN_VISION_MODEL) }
             }
         })
         visionCard.addView(label("Base URL"))
@@ -457,7 +466,8 @@ class SettingsActivity : AppCompatActivity() {
         2 -> Prefs.PROVIDER_TYPESAFE
         3 -> Prefs.PROVIDER_VERCEL
         4 -> Prefs.PROVIDER_ZEN
-        5 -> Prefs.PROVIDER_CUSTOM
+        5 -> Prefs.PROVIDER_QWEN
+        6 -> Prefs.PROVIDER_CUSTOM
         else -> Prefs.PROVIDER_OPENROUTER
     }
 
@@ -474,6 +484,7 @@ class SettingsActivity : AppCompatActivity() {
             Prefs.DEFAULT_JUDGE_BASE_TYPESAFE -> Prefs.PROVIDER_TYPESAFE
             Prefs.DEFAULT_JUDGE_BASE_VERCEL -> Prefs.PROVIDER_VERCEL
             Prefs.DEFAULT_JUDGE_BASE_ZEN -> Prefs.PROVIDER_ZEN
+            Prefs.DEFAULT_JUDGE_BASE_QWEN -> Prefs.PROVIDER_QWEN
             else -> providerOf(idx)
         }
 
@@ -484,6 +495,7 @@ class SettingsActivity : AppCompatActivity() {
         Prefs.DEFAULT_JUDGE_BASE_TYPESAFE -> Prefs.DEFAULT_JUDGE_BASE_TYPESAFE + "/v1/systemone"
         Prefs.DEFAULT_JUDGE_BASE_VERCEL -> Prefs.DEFAULT_JUDGE_BASE_VERCEL + "/v1/systemone"
         Prefs.DEFAULT_JUDGE_BASE_ZEN -> Prefs.DEFAULT_JUDGE_BASE_ZEN + "/v1/systemone"
+        Prefs.DEFAULT_JUDGE_BASE_QWEN -> Prefs.DEFAULT_JUDGE_BASE_QWEN + "/chat/completions"
         else -> base.trim()
     }
 
@@ -492,6 +504,7 @@ class SettingsActivity : AppCompatActivity() {
         Prefs.PROVIDER_TYPESAFE -> Prefs.DEFAULT_JUDGE_BASE_TYPESAFE
         Prefs.PROVIDER_VERCEL -> Prefs.DEFAULT_JUDGE_BASE_VERCEL
         Prefs.PROVIDER_ZEN -> Prefs.DEFAULT_JUDGE_BASE_ZEN
+        Prefs.PROVIDER_QWEN -> Prefs.DEFAULT_JUDGE_BASE_QWEN
         else -> Prefs.DEFAULT_JUDGE_BASE_OPENROUTER
     }
 
@@ -500,6 +513,7 @@ class SettingsActivity : AppCompatActivity() {
         Prefs.PROVIDER_TYPESAFE -> Prefs.DEFAULT_JUDGE_MODEL_TYPESAFE
         Prefs.PROVIDER_VERCEL -> Prefs.DEFAULT_JUDGE_MODEL_VERCEL
         Prefs.PROVIDER_ZEN -> Prefs.DEFAULT_JUDGE_MODEL_ZEN
+        Prefs.PROVIDER_QWEN -> Prefs.DEFAULT_JUDGE_MODEL_QWEN
         else -> Prefs.DEFAULT_JUDGE_MODEL_OPENROUTER
     }
 

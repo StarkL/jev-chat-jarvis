@@ -229,6 +229,7 @@ class Prefs(context: Context, prefsName: String = PREFS_MAIN) {
             PROVIDER_TYPESAFE -> "$base/v1/systemone"
             PROVIDER_VERCEL -> "$base/v1/systemone"   // TypeSafe-compatible gateway
             PROVIDER_ZEN -> "$base/v1/systemone"      // TypeSafe-compatible gateway
+            PROVIDER_QWEN -> "$base/chat/completions" // standard OpenAI format
             PROVIDER_CUSTOM -> judgeBaseUrl.trim()   // user supplies the full URL
             else -> "$base/alpha/decisions"
         }
@@ -292,6 +293,7 @@ class Prefs(context: Context, prefsName: String = PREFS_MAIN) {
         const val PROVIDER_TYPESAFE = "typesafe"
         const val PROVIDER_VERCEL = "vercel"
         const val PROVIDER_ZEN = "zen"
+        const val PROVIDER_QWEN = "qwen"
         const val PROVIDER_CUSTOM = "custom"
 
         const val OCR_MLKIT = "mlkit"
@@ -314,6 +316,9 @@ class Prefs(context: Context, prefsName: String = PREFS_MAIN) {
         // per judgment), jev-1.13-free is fully free but capability-limited.
         const val DEFAULT_JUDGE_BASE_ZEN = "https://opencode.ai/zen"
         const val DEFAULT_JUDGE_MODEL_ZEN = "jev-1.13"
+        // Qwen 3.7-plus via DashScope (coding-plan). Standard /chat/completions.
+        const val DEFAULT_JUDGE_BASE_QWEN = "https://coding.dashscope.aliyuncs.com/v1"
+        const val DEFAULT_JUDGE_MODEL_QWEN = "qwen3.7-plus"
 
         // Reply route presets (OpenAI-compatible chat completions).
         const val DEFAULT_REPLY_BASE = "https://openrouter.ai/api/v1"
@@ -322,10 +327,16 @@ class Prefs(context: Context, prefsName: String = PREFS_MAIN) {
         const val DEEPSEEK_MODEL = "deepseek-chat"
         const val DASHSCOPE_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
         const val DASHSCOPE_MODEL = "qwen-plus"
+        // Qwen 3.7-plus (coding-plan) for reply — same base as judge.
+        const val QWEN_REPLY_BASE = "https://coding.dashscope.aliyuncs.com/v1"
+        const val QWEN_REPLY_MODEL = "qwen3.7-plus"
 
         // Vision route preset (OpenRouter region-available; user may change).
         const val DEFAULT_VISION_BASE = "https://openrouter.ai/api/v1"
         const val DEFAULT_VISION_MODEL = "qwen/qwen2.5-vl-72b-instruct"
+        // Qwen 3.7-plus vision (same endpoint as reply/judge).
+        const val QWEN_VISION_BASE = "https://coding.dashscope.aliyuncs.com/v1"
+        const val QWEN_VISION_MODEL = "qwen3.7-plus"
         const val DASHSCOPE_VISION_MODEL = "qwen-vl-max"
 
         const val DEFAULT_REL = "对方是我的伴侣；from=me 的是我发的，from=other 的是对方发的"
