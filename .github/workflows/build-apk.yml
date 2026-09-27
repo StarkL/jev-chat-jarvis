@@ -21,12 +21,11 @@ jobs:
           distribution: 'temurin'
 
       - name: Build Debug APK
-        working-directory: jev-chat-jarvis
         run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: jev-chat-debug-apk
-          path: jev-chat-jarvis/app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
